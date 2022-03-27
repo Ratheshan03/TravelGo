@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Text,
   View,
   Image,
@@ -9,10 +8,10 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import tw from "tailwind-react-native-classnames";
-import { Icon } from "react-native-elements";
-import { useNavigation } from "@react-navigation/core";
+import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { selectTravelTimeInformation } from "../slices/navSlice";
+import { Icon } from "react-native-elements";
 
 const data = [
   {
@@ -45,10 +44,10 @@ const RideOptionsCard = () => {
   const travelTimeInformation = useSelector(selectTravelTimeInformation);
 
   return (
-    <SafeAreaView style={tw`bg-white flex-grow`}>
+    <SafeAreaView style={tw`bg-white flex-1`}>
       <View>
         <TouchableOpacity
-          onPress={() => navigation.navigate("NavigateCard")}
+          onPress={() => navigation.navigate("NavigationCard")}
           style={tw`absolute z-50 top-3 bg-gray-100 left-5 p-3 rounded-full`}
         >
           <Icon name="chevron-left" type="fontawesome" />
@@ -60,9 +59,9 @@ const RideOptionsCard = () => {
       </View>
 
       <FlatList
-        data={data}
         keyExtractor={(item) => item.id}
-        renderItem={({ item: { id, title, multiplier, image }, item }) => {
+        data={data}
+        renderItem={({ item: { id, title, multiplier, image }, item }) => (
           <TouchableOpacity
             style={tw`flex-row items-center justify-between px-5 ${
               id === selected?.id && "bg-gray-200"
@@ -71,20 +70,20 @@ const RideOptionsCard = () => {
           >
             <Image
               style={{
-                width: 100,
-                height: 100,
+                width: 80,
+                height: 80,
                 resizeMode: "contain",
               }}
               source={{ uri: image }}
             />
-            <View style={tw`-ml-6`}>
+            <View style={tw` ml-2 `}>
               <Text style={tw`text-xl font-semibold`}>{title}</Text>
               <Text>{travelTimeInformation?.duration?.text} Travel time </Text>
             </View>
             <Text style={tw`text-xl`}>
-              {new Intl.NumberFormat("en-gb", {
+              {new Intl.NumberFormat("en-US", {
                 style: "currency",
-                currency: "GBP",
+                currency: "USD",
               }).format(
                 (travelTimeInformation?.duration?.value *
                   SURGE_CHARGE_RATE *
@@ -92,8 +91,8 @@ const RideOptionsCard = () => {
                   100
               )}
             </Text>
-          </TouchableOpacity>;
-        }}
+          </TouchableOpacity>
+        )}
       />
       <View style={tw`mt-auto border-t border-gray-200`}>
         <TouchableOpacity

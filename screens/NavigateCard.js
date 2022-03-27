@@ -12,7 +12,7 @@ import { GOOGLE_MAPS_APIKEY } from "@env";
 import { useDispatch } from "react-redux";
 import { setDestination } from "../slices/navSlice";
 import { useNavigation } from "@react-navigation/native";
-import NavFavourites from "./NavFavourites";
+import NavFavourites from "../components/NavFavourites";
 import { Icon } from "react-native-elements";
 
 const NavigateCard = () => {

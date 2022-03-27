@@ -32,9 +32,9 @@ const NavOptions = () => {
       keyExtracter={(item) => item.id}
       renderItem={({ item }) => (
         <TouchableOpacity
+          disabled={!origin}
           onPress={() => navigation.navigate(item.screen)}
           style={tw`p-2 pl-6 pb-8 pt-4 bg-gray-200 m-2`}
-          disabled={!origin}
         >
           <View style={tw`${!origin && "opacity-20"}`}>
             <Image
