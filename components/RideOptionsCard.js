@@ -2,14 +2,17 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   TouchableOpacity,
   FlatList,
+  SafeAreaView,
 } from "react-native";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useState } from "react";
 import tw from "tailwind-react-native-classnames";
 import { Icon } from "react-native-elements";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/core";
+import { useSelector } from "react-redux";
+import { selectTravelTimeInformation } from "../slices/navSlice";
 
 const data = [
   {
@@ -33,8 +36,13 @@ const data = [
   },
 ];
 
+// Charge Rate
+const SURGE_CHARGE_RATE = 1.5;
+
 const RideOptionsCard = () => {
   const navigation = useNavigation();
+  const [selected, setSelected] = useState(null);
+  const travelTimeInformation = useSelector(selectTravelTimeInformation);
 
   return (
     <SafeAreaView style={tw`bg-white flex-grow`}>
@@ -46,7 +54,9 @@ const RideOptionsCard = () => {
           <Icon name="chevron-left" type="fontawesome" />
         </TouchableOpacity>
 
-        <Text style={tw`text-center py-5 text-xl`}>Select a Ride</Text>
+        <Text style={tw`text-center py-5 text-xl`}>
+          Select a Ride - {travelTimeInformation?.distance?.text}
+        </Text>
       </View>
 
       <FlatList
@@ -69,14 +79,14 @@ const RideOptionsCard = () => {
             />
             <View style={tw`-ml-6`}>
               <Text style={tw`text-xl font-semibold`}>{title}</Text>
-              <Text>{travelTimInfos?.duration?.text} Travel time </Text>
+              <Text>{travelTimeInformation?.duration?.text} Travel time </Text>
             </View>
             <Text style={tw`text-xl`}>
-              {new Intl.NumberFormat("fr-FR", {
+              {new Intl.NumberFormat("en-gb", {
                 style: "currency",
-                currency: "US",
+                currency: "GBP",
               }).format(
-                (travelTimInfos?.duration?.value *
+                (travelTimeInformation?.duration?.value *
                   SURGE_CHARGE_RATE *
                   multiplier) /
                   100
@@ -85,10 +95,18 @@ const RideOptionsCard = () => {
           </TouchableOpacity>;
         }}
       />
+      <View style={tw`mt-auto border-t border-gray-200`}>
+        <TouchableOpacity
+          disabled={!selected}
+          style={tw`bg-black py-3 m-3 ${!selected && "bg-gray-300"}`}
+        >
+          <Text style={tw`text-center text-white text-xl`}>
+            Choose {selected?.title}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
 
 export default RideOptionsCard;
-
-const styles = StyleSheet.create({});

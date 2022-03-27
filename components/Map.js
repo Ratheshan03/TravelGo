@@ -2,8 +2,12 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useRef } from "react";
 import MapView, { Marker } from "react-native-maps";
 import tw from "tailwind-react-native-classnames";
-import { useSelector } from "react-redux";
-import { selectDestination, selectOrigin } from "../slices/navSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectDestination,
+  selectOrigin,
+  selectTravelTimeInformation,
+} from "../slices/navSlice";
 import MapViewDirections from "react-native-maps-directions";
 import { GOOGLE_MAPS_APIKEY } from "@env";
 
@@ -11,6 +15,7 @@ const Map = () => {
   const origin = useSelector(selectOrigin);
   const destination = useSelector(selectDestination);
   const mapRef = useRef(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!origin || !destination) return;
@@ -20,6 +25,23 @@ const Map = () => {
     });
     return () => {};
   }, [origin, destination]);
+
+  useEffect(() => {
+    if (!origin || !destination) return;
+    const getTravelTime = async () => {
+      const URL = `https://maps.googleapis.com/maps/api/distancematrix/json?
+      units=imperial&origins=${origin.description}&destinations=${destination.description}&key=${GOOGLE_MAPS_APIsKEY}`;
+
+      fetch(URL)
+        .then((res) => res.json())
+        .then((data) => {
+          dispatch(selectTravelTimeInformation(data.rows[0].elements[0]));
+        });
+    };
+    getTravelTime();
+
+    return () => {};
+  }, [origin, destination, GOOGLE_MAPS_APIKEY]);
 
   return (
     <MapView
@@ -41,12 +63,14 @@ const Map = () => {
           apikey={GOOGLE_MAPS_APIKEY}
           strokeWidth={4}
           strokeColor="black"
-          lineDashPattern={1}
+          lineDashPattern={[1]}
         />
       )}
 
       {origin?.location && (
         <Marker
+          size={9}
+          pinColor={"blue"}
           coordinate={{
             latitude: origin.location.lat,
             longitude: origin.location.lng,
@@ -54,6 +78,7 @@ const Map = () => {
           title="Origin"
           description={origin.description}
           identifier="origin"
+          type="antdesign"
         />
       )}
 
@@ -66,6 +91,8 @@ const Map = () => {
           title="Destination"
           description={destination.description}
           identifier="destination"
+          pinColor={"green"}
+          size={9}
         />
       )}
     </MapView>
