@@ -1,4 +1,4 @@
-# TravelGo
+# TravelGo Application
 
 Cross-Platform Travelling Partner Application 🚀
 
